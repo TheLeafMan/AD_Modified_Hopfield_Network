@@ -38,11 +38,25 @@ class hopfield:
         weight = np.outer(self.pattern_list[pattern_number], self.pattern_list[pattern_number]) - np.identity(self.N)
         self.weight_list.append(weight)
         
+    def asymmetric(self): #Makes hopfield network asymmetrical to make it more "realistic"
+        for y in range(self.N):
+            for x in range(self.N - y):
+                chance = np.random.randint(1,int(self.N*self.N/20))
+                # chance = 1
+                if chance == 1:
+                    temp = np.random.choice([0,1])
+                    if temp == 0:
+                        self.overall_weight[y][self.N - x - 1] *= 0
+                    elif temp == 1:
+                        self.overall_weight[self.N - x - 1][y] *= 0
+        print("Made asymmetric")
+        
     def update_overall_weight(self):
         self.overall_weight = np.zeros((self.N, self.N))  # Reset overall_weight to zeros
         for index in range(self.number_of_patterns):
             self.overall_weight += self.weight_list[index]
         self.overall_weight /= self.number_of_patterns  # Average the values
+        self.asymmetric()
         
     def create_pattern(self, i_pattern = None):
         self.number_of_patterns = self.number_of_patterns + 1

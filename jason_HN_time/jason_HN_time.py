@@ -166,14 +166,13 @@ class hopfield:
         
         def custom_cmap(val):
             if val == -1:
-                return (1, 1, 1, 1)  # white for padding
+                return (1., 1., 1., 1.)  # white for padding
             elif val == 1:
-                return (0, 0, 0, 0)  # white
-            # elif val == 0:
-            elif val < 0.00001:
-                return (0, 0, 1, 1)  # blue for 0
-            elif val == -2:
-                return (0, 0, 1, 0.9)
+                return (0., 0., 0., 0.)  # white
+            elif val == 0:
+            # elif val < 0.00001:
+                return (0., 0., 1., 1.)  # blue for 0
+
             else:
                 # Linear interpolation between white (close to 1) and red (close to 0)
                 return (1, val, val, 1)  # redder as val decreases

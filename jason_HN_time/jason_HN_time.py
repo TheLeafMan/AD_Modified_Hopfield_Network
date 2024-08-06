@@ -54,6 +54,22 @@ class hopfield:
             self.current_state = copy.deepcopy(inputted_pattern)
             self.original_state = copy.deepcopy(inputted_pattern)
             
+    def distort_existing_pattern(self, distort_percentage = 20):
+        distorted = copy.deepcopy(self.pattern_list[np.random.randint(1,len(self.pattern_list))])
+        for i in range(self.N):
+            change = np.random.randint(1,100)
+            if change <= distort_percentage:
+                if distorted[i] == -1:
+                    distorted[i] = 1
+                    print("flip")
+                elif distorted[i] == 1:
+                    distorted[i] = -1
+                    print("flip")
+        for i in range(len(self.pattern_list)):
+            if np.any(distorted != self.pattern_list[i]):
+                print(i)
+        return distorted
+        
         
     def create_pattern(self, i_pattern = None):
         self.number_of_patterns = self.number_of_patterns + 1
@@ -187,7 +203,7 @@ class hopfield:
         
         ax.imshow(colors, interpolation='nearest')
         ax.set_title(title if time_point is None else f"{title} at {int(time_point*self.dt) + 1} years", fontsize=6)
-        print(time_point)
+        # print(time_point)
         ax.set_xticks([])
         ax.set_yticks([])
 
@@ -214,7 +230,7 @@ class hopfield:
 
         for idx, t in enumerate(time_indices):
             self.create_display(axs[idx + 1, 0], self.dou_factor[t], "Damaged Nodes", t)
-            self.set_initial_state()
+            self.set_initial_state(self.distort_existing_pattern())
             self.visualize_patterns(axs[idx + 1, 1], self.original_state, "State Before Update")
             for i in range(5):
                 self.update_all_nodes(self.affect_weight(t))

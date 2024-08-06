@@ -53,6 +53,7 @@ class hopfield:
         else:
             self.current_state = copy.deepcopy(inputted_pattern)
             self.original_state = copy.deepcopy(inputted_pattern)
+            
         
     def create_pattern(self, i_pattern = None):
         self.number_of_patterns = self.number_of_patterns + 1
@@ -168,10 +169,11 @@ class hopfield:
             if val == -1:
                 return (1., 1., 1., 1.)  # white for padding
             elif val == 1:
-                return (0., 0., 0., 0.)  # white
+                return (1., 1., 1., 1.) # White for healthy
+                # return (0.53, 0.81, 0.94, 1.)  # light blue for healthy
             elif val == 0:
             # elif val < 0.00001:
-                return (0., 0., 1., 1.)  # blue for 0
+                return (0.25, 0.25, 0.25, 1.)  # gray for 0
 
             else:
                 # Linear interpolation between white (close to 1) and red (close to 0)
@@ -180,8 +182,8 @@ class hopfield:
         # Create a color array
         colors = np.array([custom_cmap(val) for val in display_grid.flatten()]).reshape((size, size, 4))
         #print(colors)
-        if (((self.dou_factor[time_point][0] == 0) or (self.dou_factor[time_point][0] == -2)) and (time_point < self.time_steps-1)):
-            colors[0][0] = (0,0,1,0.9)
+        # if (((self.dou_factor[time_point][0] == 0) or (self.dou_factor[time_point][0] == -2)) and (time_point < self.time_steps-1)):
+        #     colors[0][0] = (0,0,1,0.9)
         
         ax.imshow(colors, interpolation='nearest')
         ax.set_title(title if time_point is None else f"{title} at {int(time_point*self.dt) + 1} years", fontsize=6)
@@ -196,12 +198,13 @@ class hopfield:
         ax.set_title(title, fontsize=6)
         ax.axis('off')
 
-    def combined_visualization(self, num_time_steps):
+    def combined_visualization(self, years_displayed):
         dim = int(np.sqrt(self.N))
-        time_indices = np.linspace(0, self.time_steps - 1, num_time_steps, dtype=int)
-
-        rows = num_time_steps + 1
-        cols = self.number_of_patterns  # +2 for Original State and Current State
+        time_indices = np.array(years_displayed)*(1/self.dt)-1
+        time_indices = time_indices.astype(int)
+        
+        rows = len(time_indices) + 1 # Number of rows equivalent to the steps you want to display
+        cols = self.number_of_patterns 
 
         fig, axs = plt.subplots(rows, cols, figsize=(cols * 2, rows * 1.2))
         fig.tight_layout()
